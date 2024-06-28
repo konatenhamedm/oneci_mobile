@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:oneci/ecrans/formulaire_principal.dart';
 import 'package:oneci/ecrans/option_screen.dart';
+import 'package:oneci/ecrans/service_identites/home.serviceidentite.dart';
 import 'package:oneci/widgets/footer.dart';
 import 'package:oneci/widgets/header.dart';
 import 'dart:ui' as ui;
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:oneci/widgets/form-helper.dart';
-
+import 'package:get/get.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -19,13 +20,18 @@ class _HomeState extends State<Home> {
   final double _borderRadius = 24;
 
   final List<PlaceInfo> items = [
-    PlaceInfo("Imprimer extrait d'acte de naissance", const Color(0xff6DC8F3), const Color(0xff73A1F1),'extrait'),
-    PlaceInfo("Imprimer acte de Mariage", const Color(0xffFF8157), const Color(0xffFFA057),'mariage'),
-    PlaceInfo("Imprimer acte de décès", const Color(0xffFF5895), const Color(0xffF8556D),'acte'),
-    PlaceInfo("Services d'identités", const Color(0xffD76EF5), const Color(0xff8F7AFE),'service'),
-    PlaceInfo("Certificat de residence", const Color(0xff42E695), const Color(0xff8F7AFE),'certificat'),
+    PlaceInfo("Imprimer extrait d'acte de naissance", const Color(0xff6DC8F3),
+        const Color(0xff73A1F1), 'extrait'),
+    PlaceInfo("Imprimer acte de Mariage", const Color(0xffFF8157),
+        const Color(0xffFFA057), 'mariage'),
+    PlaceInfo("Imprimer acte de décès", const Color(0xffFF5895),
+        const Color(0xffF8556D), 'acte'),
+    PlaceInfo("Services d'identités", const Color(0xffD76EF5),
+        const Color(0xff8F7AFE), 'service'),
+    PlaceInfo("Certificat de residence", const Color(0xff42E695),
+        const Color(0xff8F7AFE), 'certificat'),
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +39,7 @@ class _HomeState extends State<Home> {
         backgroundColor: const Color(0xFFF1A730),
         title: const Center(
           child: Text(
-              'Bienvenue sur E-PRINT',
+            'Bienvenue sur E-PRINT',
             style: TextStyle(
               color: Colors.white,
             ),
@@ -41,10 +47,11 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-
       body: Column(
         children: [
-          const SizedBox(height: 4,),
+          const SizedBox(
+            height: 4,
+          ),
           const Header(),
           Expanded(
             child: ListView.builder(
@@ -52,31 +59,59 @@ class _HomeState extends State<Home> {
               itemBuilder: (context, index) {
                 return Center(
                   child: GestureDetector(
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>  OptionScreen(type: items[index].type,)),
-                      );
+                    onTap: () {
+                      if (items[index].type == 'extrait') {
+                        Get.to(OptionScreen(
+                          type: items[index].type,
+                        ));
+                      } else if (items[index].type == 'mariage') {
+                        Get.to(OptionScreen(
+                          type: items[index].type,
+                        ));
+                      } else if (items[index].type == 'acte') {
+                        Get.to(OptionScreen(
+                          type: items[index].type,
+                        ));
+                      } else if (items[index].type == 'service') {
+                        Get.to(HomeServiceIdentite(
+                          type: items[index].type,
+                        ));
+                      } else {
+                        Get.to(OptionScreen(
+                          type: items[index].type,
+                        ));
+                      }
+
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) =>  ),
+                      // );
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(7.0),
                       child: Stack(
                         children: [
-
                           InkWell(
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) =>  OptionScreen(type: items[index].type,)),
+                                MaterialPageRoute(
+                                    builder: (context) => OptionScreen(
+                                          type: items[index].type,
+                                        )),
                               );
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
                               height: 95,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(_borderRadius),
+                                borderRadius:
+                                    BorderRadius.circular(_borderRadius),
                                 gradient: LinearGradient(
-                                  colors: [Colors.orange, items[index].endColor],
+                                  colors: [
+                                    Colors.orange,
+                                    items[index].endColor
+                                  ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
@@ -96,7 +131,8 @@ class _HomeState extends State<Home> {
                             top: 0,
                             child: CustomPaint(
                               size: const Size(100, 150),
-                              painter: CustomCardShapePainter(_borderRadius, Colors.green, Colors.green),
+                              painter: CustomCardShapePainter(
+                                  _borderRadius, Colors.green, Colors.green),
                             ),
                           ),
                           Positioned.fill(
@@ -114,7 +150,8 @@ class _HomeState extends State<Home> {
                                   flex: 3,
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         items[index].name,
@@ -151,7 +188,7 @@ class PlaceInfo {
   final Color endColor;
   final String type;
 
-  PlaceInfo(this.name, this.startColor, this.endColor,this.type);
+  PlaceInfo(this.name, this.startColor, this.endColor, this.type);
 }
 
 class CustomCardShapePainter extends CustomPainter {
@@ -176,7 +213,8 @@ class CustomCardShapePainter extends CustomPainter {
     var path = Path()
       ..moveTo(0, size.height)
       ..lineTo(size.width - radius, size.height)
-      ..quadraticBezierTo(size.width, size.height, size.width, size.height - radius)
+      ..quadraticBezierTo(
+          size.width, size.height, size.width, size.height - radius)
       ..lineTo(size.width, radius)
       ..quadraticBezierTo(size.width, 0, size.width - radius, 0)
       ..lineTo(size.width - 1.5 * radius, 0)
