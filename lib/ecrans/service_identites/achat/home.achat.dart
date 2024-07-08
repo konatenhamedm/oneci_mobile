@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:oneci/ecrans/operateur.dart';
+
+import 'package:oneci/ecrans/service_identites/achat/demande.dart';
 import 'package:oneci/ecrans/verification.dart';
 import 'package:oneci/widgets/footer.dart';
 import 'package:oneci/widgets/header.dart';
@@ -43,29 +46,29 @@ class _HomeAchatState extends State<HomeAchat> {
         modalContent = RenouvellementCNI();
         break;
       default:
-        modalContent = Text('Option inconnue');
+        modalContent = const Text('Option inconnue');
     }
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Option sélectionnée'),
+          title: const Text('Option sélectionnée'),
           content: modalContent,
-          actions: <Widget>[
-            TextButton(
-              child: Text('oui'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-             TextButton(
-              child: Text('nom'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+          // actions: <Widget>[
+          //   TextButton(
+          //     child: Text('oui'),
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //   ),
+          //    TextButton(
+          //     child: Text('nom'),
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //   ),
+          // ],
         );
       },
     );
@@ -106,7 +109,7 @@ class _HomeAchatState extends State<HomeAchat> {
                 _inscriptionUISetup(context),
               ],
             ),
-            Footer(),
+            const Footer(),
           ],
         ),
       ),
@@ -115,7 +118,7 @@ class _HomeAchatState extends State<HomeAchat> {
 
   Widget _inscriptionUISetup(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Form(
         key: globalFormKey,
         child: _inscriptionUI(context),
@@ -206,7 +209,7 @@ class _HomeAchatState extends State<HomeAchat> {
               ),
               Card(
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.orange, width: 2.0),
+                  side: const BorderSide(color: Colors.orange, width: 2.0),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: Column(
@@ -263,18 +266,7 @@ class _HomeAchatState extends State<HomeAchat> {
             ],
           ),
         ),
-        // const Center(
-        //   child: Padding(
-        //     padding: EdgeInsets.only(bottom: 10, top: 5),
-        //     child: Center(
-        //       child: Text(
-        //         "Saisissez votre numéro national d'identification (NNI)",
-        //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        //         textAlign: TextAlign.center, // Centrer le texte
-        //       ),
-        //     ),
-        //   ),
-        // ),
+      
         Padding(
           padding: const EdgeInsets.only(bottom: 20, top: 20),
           child: FormHelper.inputFieldWidget(
@@ -440,45 +432,41 @@ class _DuplicataCNIState extends State<DuplicataCNI> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Formulaire pour Duplicata CNI'),
+       const  Text('Formulaire pour Duplicata CNI'),
         
         Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Cible:\n'
-                'Ivoiriens dont la CNI se trouve dans un contexte de :\n'
-                '- Perte\n'
-                '- Vol\n'
-                '- Dégradation\n'
-                'Dans le processus de demande, vous aurez à fournir votre NNI lié à la CNI concernée.',
+                const Text(
+                "Cible:\n"
+               " Ivoiriens dont la CNI se trouve dans un contexte de :\n"
+               "- Perte\n"
+                "- Vol\n"
+                "- Dégradation\n"
+                "Dans le processus de demande, vous aurez à fournir votre NNI lié à la CNI concernée.",
                 style: TextStyle(fontSize: 16),
               ),
-             
-             
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Processing Data')),
-                          );
-                        }
+                       Navigator.of(context).pop(); // Ferme la modale
+                    // Navigue vers la nouvelle page
                       },
-                      child: Text('oui'),
+                      child: const Text('oui'),
                     ),
 
                      ElevatedButton(
                       onPressed: () {
                        Navigator.of(context).pop();
+                         Get.to( const Demande());  
                       },
-                      child: Text('non'),
+                      child: const Text('Fermer'),
                     ),
                   ],
                 ),
@@ -498,12 +486,35 @@ class NouvelleCNI extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Formulaire pour Nouvelle CNI'),
-        TextField(
-          decoration: InputDecoration(labelText: 'Nom complet'),
+        const Text(
+          'Cible:\n'
+          'Ivoiriens dont la CNI est arrivée à expiration en 2009 ou ayant perdu l’ancienne carte en cours de validité ou encore voulant s’inscrire dans le nouveau système.\n'
+          '\n'
+          'Pièces à fournir:\n'
+          '- Le Certificat de nationalité de 2 ans au plus.\n'
+          '- L’extrait d’acte de naissance de 6 mois au plus.\n'
+          '\n'
+          'NB:\n'
+          'Femmes mariées: joindre la copie de l’acte de mariage si l’extrait ne porte pas la mention.',
+          style: TextStyle(fontSize: 16),
         ),
-        TextField(
-          decoration: InputDecoration(labelText: 'Date de naissance'),
+
+        const SizedBox(height: 20),
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+             
+              
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                
+                },
+                child: const Text('Fermer'),
+              ),
+            ],
+          ),
         ),
         // Ajoutez d'autres champs de formulaire si nécessaire
       ],
@@ -517,12 +528,27 @@ class RenouvellementCNI extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Formulaire pour Renouvellement CNI'),
-        TextField(
-          decoration: InputDecoration(labelText: 'Nom complet'),
+         const  Text(
+          "Cible:\n"
+          "Ivoiriens de 5 ans et plus n’ayant jamais fait la demande de la carte nationale d’identité (CNI).\n"
+          "\n"
+          "Pièces à fournir:\n"
+          "-La carte nationale d’identité ou une photocopie de cette CNI ou le numéro de cette CNI.\n",
+          style: TextStyle(fontSize: 16),
         ),
-        TextField(
-          decoration: InputDecoration(labelText: 'Numéro de CNI actuel'),
+          const SizedBox(height: 20),
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Fermer'),
+              ),
+            ],
+          ),
         ),
         // Ajoutez d'autres champs de formulaire si nécessaire
       ],

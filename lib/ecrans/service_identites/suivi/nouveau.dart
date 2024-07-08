@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:oneci/composants/Input_field.dart';
-import 'package:oneci/ecrans/service_identites/suivi/encient.dart';
+import 'package:oneci/ecrans/service_identites/home.serviceidentite.dart';
 import 'package:oneci/widgets/footer.dart';
 import 'package:oneci/widgets/form-helper.dart';
 import 'package:oneci/widgets/header.dart';
 
-class HomeServiceIdentite extends StatefulWidget {
+class Nouveau extends StatefulWidget {
   final String type;
-  const HomeServiceIdentite({super.key, required this.type});
+  const Nouveau({super.key, required this.type});
 
   @override
-  State<HomeServiceIdentite> createState() => _HomeServiceIdentiteState();
+  State<Nouveau> createState() => _NouveauState();
 }
 
-class _HomeServiceIdentiteState extends State<HomeServiceIdentite> {
+class _NouveauState extends State<Nouveau> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   static final GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   String _nni = "";
 
   bool hidePassword = true;
   bool isApiCall = false;
-  int _selectedValue = 1;
-  String? _selectedCountry;
-  String _nom = '';
+   int _selectedValue = 1;
+   String _nom = '';
   String _numero = '';
   String _dateNaissance = '';
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +71,7 @@ class _HomeServiceIdentiteState extends State<HomeServiceIdentite> {
 
   Widget _inscriptionUISetup(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const  EdgeInsets.all(20),
       child: Form(
         key: globalFormKey,
         child: _inscriptionUI(context),
@@ -96,38 +97,18 @@ class _HomeServiceIdentiteState extends State<HomeServiceIdentite> {
                   side: const BorderSide(color: Colors.orange, width: 2.0),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                child: const Padding(
+                  padding:  EdgeInsets.all(16.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Veuillez renseigner les champs du formulaire ci-dessous\n'
-                        'afin d\'obtenir un numéro de dossier qui vous permettra d\'être reçu.',
+                      Text(
+                        "Veuillez renseigner les champs du formulaire ci-dessous afin de connaître le statut de la production de votre Carte Nationale d'Identité",
                         textAlign: TextAlign.start,
                         style: TextStyle(
                             fontSize: 18.0, fontWeight: FontWeight.bold),
                       ),
-                      RadioListTile<int>(
-                        title: const Text('CNI (Ancien Format)'),
-                        value: 1,
-                        groupValue: _selectedValue,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedValue = value!;
-                          });
-                        },
-                      ),
-                      RadioListTile<int>(
-                        title: const Text('CNI (Nouveau Format)'),
-                        value: 2,
-                        groupValue: _selectedValue,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedValue = value!;
-                          });
-                        },
-                      ),
+                      
                     ],
                   ),
                 ),
@@ -135,16 +116,16 @@ class _HomeServiceIdentiteState extends State<HomeServiceIdentite> {
             ],
           ),
         ),
-        if (_selectedValue == 1)
+        
           Column(
             children: [
               CustomInputField(
                 icon: const Icon(Icons.person),
                 label: "numero",
-                hint: "Entrez le numéro du récépissé d'enrôlement",
+                hint: "Entrez votre numéro de demande",
                 validator: (onValidateVal) {
                   if (onValidateVal!.isEmpty) {
-                    return 'Le numéro du récépissé  est requis';
+                    return 'Le numéro  de demande  est requis';
                   }
                   return null;
                 },
@@ -153,18 +134,50 @@ class _HomeServiceIdentiteState extends State<HomeServiceIdentite> {
                 },
                 keyboardType: TextInputType.number,
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Encient(
-                              type: "encient",
-                            )),
-                  );
-                },
+
+               CustomInputField(
+              icon: const Icon(Icons.person),
+              label: "nom",
+              hint: "Entrez votre nom de famille (ou le nom de votre époux)",
+              validator: (onValidateVal) {
+                if (onValidateVal!.isEmpty) {
+                  return 'Le nom de famille  est requis';
+                }
+                return null;
+              },
+              onSaved: (onSavedVal) {
+                _nom = onSavedVal.toString().trim();
+              },
+              keyboardType: TextInputType.text,
+            ),
+
+             CustomInputField(
+              icon: const Icon(Icons.person),
+              label: "date de naissance",
+              hint: "Entrez votre date de naissance",
+              validator: (onValidateVal) {
+                if (onValidateVal!.isEmpty) {
+                  return 'Le numéro  de demande  est requis';
+                }
+                return null;
+              },
+              onSaved: (onSavedVal) {
+                _dateNaissance = onSavedVal.toString().trim();
+              },
+              keyboardType: TextInputType.number,
+            ),
+             InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HomeServiceIdentite(
+                            type: 'home',
+                          )),
+                );
+              },
                 child: const Text(
-                  "Je n'ai pas mon numéro de récépissé d'enrôlement ",
+                  'Je ne suis pas en possession de mon numéro de demande',
                   style: TextStyle(
                       color: Colors.blue,
                       decoration: TextDecoration.underline,
@@ -176,66 +189,8 @@ class _HomeServiceIdentiteState extends State<HomeServiceIdentite> {
                 height: 4,
               ),
             ],
-          )
-        else
-          Column(
-            children: [
-              CustomInputField(
-                icon: const Icon(Icons.person),
-                label: "nom",
-                hint: "Entrez votre nom de famille (ou le nom de votre époux)",
-                validator: (onValidateVal) {
-                  if (onValidateVal!.isEmpty) {
-                    return 'Le votre nom de famille est requis';
-                  }
-                  return null;
-                },
-                onSaved: (onSavedVal) {
-                  _nom = onSavedVal.toString().trim();
-                },
-                keyboardType: TextInputType.text,
-              ),
-              CustomInputField(
-                icon: const Icon(Icons.person),
-                label: "numero",
-                hint: "Entrez votre numéro de demande",
-                validator: (onValidateVal) {
-                  if (onValidateVal!.isEmpty) {
-                    return 'votre numéro de demande est requis';
-                  }
-                  return null;
-                },
-                onSaved: (onSavedVal) {
-                  _numero = onSavedVal.toString().trim();
-                },
-                keyboardType: TextInputType.number,
-              ),
-              CustomInputField(
-                icon: const Icon(Icons.verified_user),
-                label: "Date de naissance",
-                hint: "jj-mm-aaaa",
-                validator: (onValidateVal) {
-                  if (onValidateVal!.isEmpty) {
-                    return 'La date de naissance est requise';
-                  }
-                  return null;
-                },
-                onSaved: (onSavedVal) {
-                  _dateNaissance = onSavedVal.toString().trim();
-                },
-                keyboardType: TextInputType.datetime,
-              ),
-            ],
           ),
-        InkWell(onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const HomeServiceIdentite(
-                      type: 'home',
-                    )),
-          );
-        }),
+       
         const SizedBox(
           height: 4,
         ),
