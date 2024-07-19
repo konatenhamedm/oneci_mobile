@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oneci/ecrans/formulaire_principal.dart';
 import 'package:oneci/ecrans/option_screen.dart';
-import 'package:oneci/ecrans/service_identites/achat/home.achat.dart';
 import 'package:oneci/ecrans/service_identites/home.serviceidentite.dart';
-import 'package:oneci/ecrans/service_identites/suivi/home.suivie.dart';
 import 'package:oneci/widgets/footer.dart';
 import 'package:oneci/widgets/header.dart';
 import 'dart:ui' as ui;
@@ -63,17 +61,31 @@ class _HomeState extends State<Home> {
                   child: GestureDetector(
                     onTap: () {
                       if (items[index].type == 'extrait') {
-                        Get.to(() => OptionScreen(type: items[index].type));
+                        Get.to(OptionScreen(
+                          type: items[index].type,
+                        ));
                       } else if (items[index].type == 'mariage') {
-                        Get.to(() => OptionScreen(type: items[index].type));
+                        Get.to(OptionScreen(
+                          type: items[index].type,
+                        ));
                       } else if (items[index].type == 'acte') {
-                        Get.to(() => OptionScreen(type: items[index].type));
+                        Get.to(OptionScreen(
+                          type: items[index].type,
+                        ));
                       } else if (items[index].type == 'service') {
-                        Get.to(
-                            () => HomeServiceIdentite(type: items[index].type));
+                        Get.to(HomeServiceIdentite(
+                          type: items[index].type,
+                        ));
                       } else {
-                        Get.to(() => OptionScreen(type: items[index].type));
+                        Get.to(OptionScreen(
+                          type: items[index].type,
+                        ));
                       }
+
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) =>  ),
+                      // );
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(7.0),

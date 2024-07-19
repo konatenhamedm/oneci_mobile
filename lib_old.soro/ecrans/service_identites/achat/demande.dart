@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:get/get_core/src/get_main.dart';
 import 'package:oneci/ecrans/operateur.dart';
 
 import 'package:oneci/ecrans/verification.dart';
@@ -25,6 +25,11 @@ class _DemandeState extends State<Demande> {
   bool isApiCall = false;
   int _selectedValue = 1;
 
+ 
+
+  
+   
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,19 +53,19 @@ class _DemandeState extends State<Demande> {
           ),
         ),
       ),
-       body: SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 1),
-            const Header(),
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Form(
-                key: globalFormKey,
-                child: _inscriptionUI(context),
-              ),
+            const SizedBox(
+              height: 1,
             ),
-            const Footer(),
+            const Header(),
+            Stack(
+              children: [
+                _inscriptionUISetup(context),
+              ],
+            ),
+           const Footer(),
           ],
         ),
       ),
@@ -100,12 +105,11 @@ class _DemandeState extends State<Demande> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
+                     const Text(
                         'Veuillez renseigner les champs du formulaire ci-dessous\n'
                         'afin d\'obtenir un numéro de dossier qui vous permettra d\'être reçu.',
                         textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 18.0,fontWeight: FontWeight.bold),
                       ),
                       RadioListTile<int>(
                         title: const Text('Faire une demande de NNI'),
@@ -115,11 +119,12 @@ class _DemandeState extends State<Demande> {
                           setState(() {
                             _selectedValue = value!;
                           });
-                          Get.to(const Operateur());
+                            Get.to(const Operateur());
                         },
                       ),
                       RadioListTile<int>(
-                        title: const Text('Suivre ma demande'),
+                        title: const Text(
+                            'Suivre ma demande'),
                         value: 2,
                         groupValue: _selectedValue,
                         onChanged: (value) {
@@ -129,13 +134,16 @@ class _DemandeState extends State<Demande> {
                           Get.to(const Operateur());
                         },
                       ),
+                      
                     ],
                   ),
                 ),
               ),
+             
             ],
           ),
         ),
+       
         const SizedBox(
           height: 4,
         ),
@@ -169,3 +177,9 @@ class _DemandeState extends State<Demande> {
     return false;
   }
 }
+
+
+
+
+
+

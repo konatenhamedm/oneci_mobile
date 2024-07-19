@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:oneci/ecrans/operateur.dart';
+
 import 'package:oneci/ecrans/service_identites/achat/demande.dart';
 import 'package:oneci/ecrans/verification.dart';
 import 'package:oneci/widgets/footer.dart';
@@ -263,6 +266,7 @@ class _HomeAchatState extends State<HomeAchat> {
             ],
           ),
         ),
+      
         Padding(
           padding: const EdgeInsets.only(bottom: 20, top: 20),
           child: FormHelper.inputFieldWidget(
@@ -407,7 +411,6 @@ class _HomeAchatState extends State<HomeAchat> {
     return false;
   }
 }
-
 class DuplicataCNI extends StatefulWidget {
   @override
   State<DuplicataCNI> createState() => _DuplicataCNIState();
@@ -415,7 +418,7 @@ class DuplicataCNI extends StatefulWidget {
 
 class _DuplicataCNIState extends State<DuplicataCNI> {
   @override
-  final _formKey = GlobalKey<FormState>();
+   final _formKey = GlobalKey<FormState>();
 
   final _nniController = TextEditingController();
 
@@ -429,17 +432,17 @@ class _DuplicataCNIState extends State<DuplicataCNI> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text('Formulaire pour Duplicata CNI'),
-
+       const  Text('Formulaire pour Duplicata CNI'),
+        
         Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+                const Text(
                 "Cible:\n"
-                " Ivoiriens dont la CNI se trouve dans un contexte de :\n"
-                "- Perte\n"
+               " Ivoiriens dont la CNI se trouve dans un contexte de :\n"
+               "- Perte\n"
                 "- Vol\n"
                 "- Dégradation\n"
                 "Dans le processus de demande, vous aurez à fournir votre NNI lié à la CNI concernée.",
@@ -452,15 +455,16 @@ class _DuplicataCNIState extends State<DuplicataCNI> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop(); // Ferme la modale
-                        // Navigue vers la nouvelle page
+                       Navigator.of(context).pop(); // Ferme la modale
+                    // Navigue vers la nouvelle page
                       },
                       child: const Text('oui'),
                     ),
-                    ElevatedButton(
+
+                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
-                        Get.to(const Demande());
+                       Navigator.of(context).pop();
+                         Get.to( const Demande());  
                       },
                       child: const Text('Fermer'),
                     ),
@@ -484,7 +488,7 @@ class NouvelleCNI extends StatelessWidget {
       children: [
         const Text(
           'Cible:\n'
-          'Ivoiriens de 5 ans et plus n’ayant jamais fait la demande de la carte nationale d’identité (CNI).\n'
+          'Ivoiriens dont la CNI est arrivée à expiration en 2009 ou ayant perdu l’ancienne carte en cours de validité ou encore voulant s’inscrire dans le nouveau système.\n'
           '\n'
           'Pièces à fournir:\n'
           '- Le Certificat de nationalité de 2 ans au plus.\n'
@@ -500,9 +504,12 @@ class NouvelleCNI extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+             
+              
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
+                
                 },
                 child: const Text('Fermer'),
               ),
@@ -521,7 +528,7 @@ class RenouvellementCNI extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+         const  Text(
           "Cible:\n"
           "Ivoiriens de 5 ans et plus n’ayant jamais fait la demande de la carte nationale d’identité (CNI).\n"
           "\n"
@@ -529,7 +536,7 @@ class RenouvellementCNI extends StatelessWidget {
           "-La carte nationale d’identité ou une photocopie de cette CNI ou le numéro de cette CNI.\n",
           style: TextStyle(fontSize: 16),
         ),
-        const SizedBox(height: 20),
+          const SizedBox(height: 20),
         Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
