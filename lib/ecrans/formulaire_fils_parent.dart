@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:oneci/ecrans/verification.dart';
+import 'package:oneci/ecrans/verification_parent_enfant.dart';
+import 'package:oneci/services/services.dart';
 import 'package:oneci/widgets/footer.dart';
 import 'package:oneci/widgets/header.dart';
 import 'package:oneci/widgets/form-helper.dart';
@@ -112,10 +117,10 @@ class _FormulaireFilsParentState extends State<FormulaireFilsParent> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 20, top: 20),
+          padding: const EdgeInsets.only(bottom: 20, top: 10),
           child: FormHelper.inputFieldWidget(
             context,
-            const Icon(Icons.verified_user),
+            const Icon(Icons.numbers),
             "nni_parent",
             "Entrez le NNI du parent",
                 (onValidateVal) {
@@ -131,15 +136,21 @@ class _FormulaireFilsParentState extends State<FormulaireFilsParent> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 20, top: 20),
+          padding: const EdgeInsets.only(bottom: 20, top: 4),
           child: FormHelper.inputFieldWidget(
             context,
-            const Icon(Icons.verified_user),
+            const Icon(Icons.numbers),
             "nni_enfant",
             "Entrez le NNI de l'enfant",
                 (onValidateVal) {
               if (onValidateVal.isEmpty) {
                 return "Le NNI de l'enfant est requis";
+              }
+              if(onValidateVal.length < 11){
+                return 'Le NNI doit avoir 11 chiffres';
+              }
+              if(onValidateVal.length < 11){
+                return 'Le NNI doit avoir 11 chiffres';
               }
               return null;
             },
@@ -149,7 +160,7 @@ class _FormulaireFilsParentState extends State<FormulaireFilsParent> {
               TextInputType.number,0,9
           ),
         ),
-        const SizedBox(height: 20,),
+        const SizedBox(height: 5,),
         Center(
           child: FormHelper.saveButtonNew(
               "Soumettre la demande", () {
@@ -157,10 +168,36 @@ class _FormulaireFilsParentState extends State<FormulaireFilsParent> {
               setState(() {
                 isApiCall = true;
               });
+
+              try{
+                Services.getExisteParentEnfants(_nni_enfant,_nni_parent).then((response){
+                  setState(() {
+                    isApiCall = false;
+                  });
+                  if(response == true){
+                    Get.to( VerificationParentEnfant(type: widget.type,nniEnfant: _nni_enfant,nniParent: _nni_parent,));
+                  }else{
+                    FormHelper.showMessage2(context, "Alerte information", "message", "buttonText", (){},Message("Cette couple n'existe pas dans notre base de données"));
+                  }
+                }).catchError((error) {
+                  setState(() {
+                    isApiCall = false;
+                  });
+                  FormHelper.showMessage2(context, "Erreur réseau", "Oops, une erreur est survenue", "OK", () {}, Message("Erreur réseau, veuillez réessayer plus tard"));
+                });
+              }catch(e){
+                setState(() {
+                  isApiCall = false;
+                });
+                FormHelper.showMessage2(context, "Erreur", "Oops, une erreur est survenue", "OK", () {}, Message("Oops, une erreur est survenue, veuillez réessayer plus tard"));
+              }
+
+
+              //
             }
           },65),
         ),
-        const SizedBox(height: 80,),
+        const SizedBox(height: 110,),
       ],
     );
   }
@@ -175,5 +212,15 @@ class _FormulaireFilsParentState extends State<FormulaireFilsParent> {
       return false;
     }
     return false;
+  }
+
+  static Widget Message(String message) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Text(message,textAlign: TextAlign.center,style: const TextStyle(
+          fontWeight: FontWeight.normal,
+          fontSize: 12
+      ),),
+    ) ;
   }
 }

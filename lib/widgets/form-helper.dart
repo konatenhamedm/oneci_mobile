@@ -1,8 +1,8 @@
 import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Pour utiliser les formatters
+import 'package:flutter/services.dart';
 class FormHelper{
 
 
@@ -16,18 +16,17 @@ class FormHelper{
       int? maxLength,
       TextInputType inputType,
       int? minValue, // Nouveau paramètre pour la valeur minimale
-      int? maxValue, // Nouveau paramètre pour la valeur maximale// Par défaut, le type est `text`
+      int? maxValue, // Nouveau paramètre pour la valeur maximale
           {
         String initialValue = "",
         bool obscureText = false,
         Widget? suffixIcon,
-
-      }) {
+        Function(String)? onError, // Callback pour les erreurs
+      }
+      ) {
     List<TextInputFormatter> formatters = [];
 
-    // Vérifier le type de champ et configurer les formatters si le type est `number`
     if (inputType == TextInputType.number) {
-      // Vérifier si un intervalle de longueur a été spécifié
       if (minValue != null && maxLength != null) {
         formatters.add(FilteringTextInputFormatter.allow(RegExp(r'^\d{0,' + maxLength.toString() + r'}$')));
       } else if (minValue != null) {
@@ -35,23 +34,47 @@ class FormHelper{
       }
     }
 
+    TextEditingController controller = TextEditingController(text: initialValue);
+
+    // Appliquer un listener pour bloquer l'utilisateur d'écrire plus de caractères
+    controller.addListener(() {
+      if (maxLength != null && controller.text.length > maxLength) {
+        controller.text = controller.text.substring(0, maxLength);
+        controller.selection = TextSelection.fromPosition(TextPosition(offset: maxLength));
+      }
+    });
+
     return Container(
       height: 65.0,
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: TextFormField(
-        initialValue: initialValue,
+        controller: controller,
         key: Key(keyName),
         obscureText: obscureText,
         validator: (val) {
-          return onValidate(val);
+          String? validationResult = onValidate(val);
+          if (validationResult != null) {
+            if (onError != null) {
+              onError(validationResult);
+            }
+            return validationResult;
+          }
+          if (val != null && maxLength != null && val.length > maxLength) {
+            String error = 'Le champ ne peut pas dépasser $maxLength caractères';
+            if (onError != null) {
+              onError(error);
+            }
+            return error;
+          }
+          return null;
         },
         onSaved: (val) {
           return onSave(val);
         },
         style: const TextStyle(fontSize: 18),
-        keyboardType: inputType, // Type de clavier
-        maxLength: maxLength, // Limite de caractères
-        inputFormatters: formatters.isNotEmpty ? formatters : null, // Appliquer les formatters si nécessaire
+        keyboardType: inputType,
+        maxLength: maxLength,
+        inputFormatters: formatters.isNotEmpty ? formatters : null,
         decoration: InputDecoration(
           hintStyle: const TextStyle(
             fontWeight: FontWeight.bold,
@@ -84,6 +107,7 @@ class FormHelper{
       ),
     );
   }
+
 
 
   static Widget saveButton(
@@ -146,19 +170,19 @@ class FormHelper{
         child: Center(
           child: ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.orange), // Couleur de fond du bouton
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Couleur du texte
-              shadowColor: MaterialStateProperty.all<Color>(Colors.blueAccent), // Couleur de l'ombre
-              elevation: MaterialStateProperty.all<double>(5), // Élévation de l'ombre
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.orange), // Couleur de fond du bouton
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.white), // Couleur du texte
+              shadowColor: WidgetStateProperty.all<Color>(Colors.blueAccent), // Couleur de l'ombre
+              elevation: WidgetStateProperty.all<double>(5), // Élévation de l'ombre
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10), // Bordures arrondies
                 ),
               ),
-              padding: MaterialStateProperty.all<EdgeInsets>(
+              padding: WidgetStateProperty.all<EdgeInsets>(
                  EdgeInsets.symmetric(horizontal: largeur, vertical: 10), // Padding interne
               ),
-              textStyle: MaterialStateProperty.all<TextStyle>(
+              textStyle: WidgetStateProperty.all<TextStyle>(
                 const  TextStyle(
                   fontSize: 15, // Taille du texte
                   fontWeight: FontWeight.bold, // Épaisseur du texte
@@ -234,11 +258,16 @@ static void showMessage2(BuildContext context,
                 const SizedBox(height: 20),
                 corps,
                 const SizedBox(height: 20),
-                ElevatedButton(
+                  ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all<Color>(Colors.orange)
+                  ),
                   onPressed: () {
                     Navigator.of(context).pop(); // Ferme l'AlertDialog
                   },
-                  child: const Text('Fermer'),
+                  child: const Text('Fermer',style: TextStyle(
+                    color: Colors.white
+                  ),),
                 ),
               ],
             ),

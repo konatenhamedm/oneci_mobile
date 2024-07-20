@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:oneci/ecrans/formulaire_principal.dart';
 import 'package:oneci/ecrans/option_screen.dart';
+import 'package:oneci/ecrans/validation.dart';
 import 'package:oneci/widgets/footer.dart';
 import 'package:oneci/widgets/header.dart';
 import 'dart:ui' as ui;
@@ -8,7 +11,8 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:oneci/widgets/form-helper.dart';
 
 class Operateur extends StatefulWidget {
-  const Operateur({super.key});
+  final String type,nni,nombre;
+  const Operateur({super.key,required this.type,required this.nni,required this.nombre});
 
   @override
   State<Operateur> createState() => _OperateurState();
@@ -18,10 +22,10 @@ class _OperateurState extends State<Operateur> {
   final double _borderRadius = 24;
 
   final List<PlaceInfo> items = [
-    PlaceInfo("Orange", const Color(0xFF000000), const Color(0xFF000000), 'orange'),
-    PlaceInfo("MTN", const Color(0xFFF7C201), const Color(0xFFF7C201), 'mtn'),
-    PlaceInfo("Moov", const Color(0xFF0063AD), const Color(0xFF0063AD), 'moov'),
-    PlaceInfo("Wave", const Color(0xFF1DC4FF), const Color(0xFF1DC4FF), 'wave'),
+    PlaceInfo("Orange", const Color(0xFF000000), const Color(0xFF000000), 'orange','*144*828#'),
+    PlaceInfo("MTN", const Color(0xFFF7C201), const Color(0xFFF7C201), 'mtn','155*828#'),
+    PlaceInfo("Moov", const Color(0xFF0063AD), const Color(0xFF0063AD), 'moov','*144*828#'),
+    PlaceInfo("Wave", const Color(0xFF1DC4FF), const Color(0xFF1DC4FF), 'wave','*144*828#'),
   ];
 
   @override
@@ -29,6 +33,13 @@ class _OperateurState extends State<Operateur> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFF1A730),
+        leading: IconButton(
+          iconSize: 30,
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: const Center(
           child: Text(
             'Bienvenue sur E-PRINT',
@@ -50,10 +61,7 @@ class _OperateurState extends State<Operateur> {
                 return Center(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => OptionScreen(type: items[index].type)),
-                      );
+                      Get.to(Validation(code: items[index].code,type: widget.type,nni: widget.nni,nombre: widget.nombre,operateur: items[index].name,));
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(7.0),
@@ -61,10 +69,7 @@ class _OperateurState extends State<Operateur> {
                         children: [
                           InkWell(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => OptionScreen(type: items[index].type)),
-                              );
+                              Get.to(Validation(code: items[index].code,type: widget.type,nni: widget.nni,nombre: widget.nombre,operateur: items[index].name,));
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
@@ -152,8 +157,8 @@ class PlaceInfo {
   final Color startColor;
   final Color endColor;
   final String type;
-
-  PlaceInfo(this.name, this.startColor, this.endColor, this.type);
+  final String code;
+  PlaceInfo(this.name, this.startColor, this.endColor, this.type,this.code);
 }
 
 class CustomCardShapePainter extends CustomPainter {

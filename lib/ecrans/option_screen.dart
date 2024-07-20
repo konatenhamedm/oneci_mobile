@@ -19,7 +19,7 @@ class _OptionScreenState extends State<OptionScreen> {
 
   final List<PlaceInfo> items = [
     PlaceInfo("Imprimer pour vous", '437532.png','vous'),
-    PlaceInfo("Imprimer quelqu'un d'autre", '76828.png','autre'),
+    PlaceInfo("Imprimer pour quelqu'un ", '76828.png','autre'),
     PlaceInfo("Imprimer pour votre enfant", '10415.png','enfant'),
 
   ];
@@ -33,7 +33,6 @@ class _OptionScreenState extends State<OptionScreen> {
           iconSize: 30,
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Action de retour
             Navigator.of(context).pop();
           },
         ),
@@ -90,6 +89,7 @@ class _OptionScreenState extends State<OptionScreen> {
                           ),
                           child: Card(
                             color:  Colors.orange.shade400,
+                            surfaceTintColor:Colors.white,
                             elevation: 1, // désactive l'ombre de la carte pour le remplacer par un ombrage
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -121,7 +121,7 @@ class _OptionScreenState extends State<OptionScreen> {
               ),
             ),
           ),
-          Footer(),
+          const Footer(),
         ],
       ),
     );

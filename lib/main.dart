@@ -1,27 +1,23 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
 import 'package:get/get.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:http/http.dart' as http;
 import 'package:oneci/ecrans/home.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Plateform de demande documents administratifs',
+void main()  {
+  runApp(
+    const GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const Home(),
-    );
-  }
-
-
+      home: Home(),
+    ),
+  );
 }
+

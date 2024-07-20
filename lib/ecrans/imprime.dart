@@ -10,14 +10,14 @@ import 'dart:io';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 
 class Imprime extends StatefulWidget {
-  const Imprime({Key? key}) : super(key: key);
+  final String type,nni;
+  const Imprime({Key? key,required this.type,required this.nni}) : super(key: key);
 
   @override
   State<Imprime> createState() => _ImprimeState();
 }
 
 class _ImprimeState extends State<Imprime> {
-  final TextEditingController _controller = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   static final GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   String _nombre = "";
@@ -69,87 +69,131 @@ class _ImprimeState extends State<Imprime> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 1,
-            child: _path.isNotEmpty
-                ? Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.green, Colors.white],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
+      body:_inscriptionUISetup(context),
 
+    );
+  }
+
+  Widget _inscriptionUISetup(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(5),
+      child: Form(
+        key: globalFormKey,
+        child: _formulaire(context),
+      ),
+    );
+  }
+
+  Widget _formulaire(BuildContext context) {
+    return   Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 1,
+          child: _path.isNotEmpty
+              ? Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Colors.green, Colors.white],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                child: Card(
-                  elevation: 5.0,
-                  margin: const EdgeInsets.all(5.0),
-                  child: PDFView(filePath: _path),
-                ),
+                borderRadius: BorderRadius.circular(10),
+
               ),
-            )
-                : const Center(child:  CircularProgressIndicator()),
-          ),
-          Expanded(
-            flex: 0,
-            child: Padding(
-              padding: const EdgeInsets.all(7.0),
-              child: Container(
+              child: Card(
+                surfaceTintColor:Colors.white,
+                elevation: 5.0,
+                margin: const EdgeInsets.all(5.0),
+                child: PDFView(filePath: _path),
+              ),
+            ),
+          )
+              : const Center(child:  CircularProgressIndicator()),
+        ),
+        Expanded(
+          flex: 0,
+          child: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Container(
 
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.green, Colors.white],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Colors.green, Colors.white],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                child: Card(
-                  color: Colors.white,
-                  elevation: 8.0,
-                  margin: EdgeInsets.all(5.0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 2.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        FormHelper.inputFieldWidget(
-                            context,
-                            const Icon(Icons.verified_user),
-                            "nombre",
-                            "Entrez le nombre de copies",
-                                (onValidateVal) {
-                              if (onValidateVal.isEmpty) {
-                                return 'Le numero nni est requis';
-                              }
-                              return null;
-                            },
-                                (onSavedVal) {
-                              _nombre = onSavedVal.toString().trim();
-                            },1,
-                            TextInputType.number,
-                            0,7
-                        ),
-                        const SizedBox(height: 16.0),
-                        FormHelper.saveButtonNew('Valider et Continuer', (){
-                          Get.to(Operateur());
-                        }, 65),
-                      ],
-                    ),
+                borderRadius: BorderRadius.circular(10),
+
+              ),
+              child: Card(
+                color: Colors.white,
+                surfaceTintColor:Colors.white,
+                elevation: 8.0,
+                margin: EdgeInsets.all(5.0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 2.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FormHelper.inputFieldWidget(
+                          context,
+                          const Icon(Icons.print),
+                          "nombre",
+                          "Entrez le nombre de copies",
+                              (onValidateVal) {
+                            print('bsjnbs');
+                            if (onValidateVal.isEmpty) {
+
+                              return 'Le numero nni est requis';
+                            }
+                            if(onValidateVal.length < 1){
+                              return 'Le nombre de copies doit etre ';
+                            }
+
+                            return null;
+                          },
+                              (onSavedVal) {
+                            _nombre = onSavedVal.toString().trim();
+                          },1,
+                          TextInputType.number,
+                          0,7
+                      ),
+                      const SizedBox(height: 16.0),
+                      FormHelper.saveButtonNew('Valider et Continuer', (){
+                        if (validatedSave()) {
+                          setState(() {
+                            isApiCall = true;
+                          });
+
+                          Get.to(Operateur(type: widget.type,nni: widget.nni,nombre: _nombre,));
+                        }
+
+                      }, 65),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
-          Footer(),
-        ],
-      ),
+        ),
+        const  Footer(),
+      ],
     );
   }
+  bool validatedSave() {
+    final form = globalFormKey.currentState;
+    if (form != null) {
+      if (form.validate()) {
+        form.save();
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
 }
