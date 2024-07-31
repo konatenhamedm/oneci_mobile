@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:oneci/composants/Input_field.dart';
-import 'package:oneci/ecrans/service_identites/home.serviceidentite.dart';
-import 'package:oneci/widgets/footer.dart';
-import 'package:oneci/widgets/form-helper.dart';
-import 'package:oneci/widgets/header.dart';
+import 'package:oneci_app/composants/Input_field.dart';
+import 'package:oneci_app/widgets/footer.dart';
+import 'package:oneci_app/widgets/form-helper.dart';
+import 'package:oneci_app/widgets/header.dart';
+import 'package:http/http.dart' as http;
 
-class Nouveau extends StatefulWidget {
+class Qrcode extends StatefulWidget {
   final String type;
-  const Nouveau({super.key, required this.type});
+  const Qrcode({super.key, required this.type});
 
   @override
-  State<Nouveau> createState() => _NouveauState();
+  State<Qrcode> createState() => _QrcodeState();
 }
 
-class _NouveauState extends State<Nouveau> {
+class _QrcodeState extends State<Qrcode> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   static final GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   String _nni = "";
 
-  bool hidePassword = true;
   bool isApiCall = false;
-   int _selectedValue = 1;
-   String _nom = '';
+  String _nom = '';
   String _numero = '';
   String _dateNaissance = '';
-  
-
+  String _qrCodeUrl = '';
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +33,6 @@ class _NouveauState extends State<Nouveau> {
           iconSize: 30,
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Action de retour
             Navigator.of(context).pop();
           },
         ),
@@ -53,15 +49,8 @@ class _NouveauState extends State<Nouveau> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(
-              height: 1,
-            ),
             const Header(),
-            Stack(
-              children: [
-                _inscriptionUISetup(context),
-              ],
-            ),
+            _inscriptionUISetup(context),
             const Footer(),
           ],
         ),
@@ -71,7 +60,7 @@ class _NouveauState extends State<Nouveau> {
 
   Widget _inscriptionUISetup(BuildContext context) {
     return Container(
-      padding: const  EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Form(
         key: globalFormKey,
         child: _inscriptionUI(context),
@@ -98,17 +87,18 @@ class _NouveauState extends State<Nouveau> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: const Padding(
-                  padding:  EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Veuillez renseigner les champs du formulaire ci-dessous afin de connaître le statut de la production de votre Carte Nationale d'Identité",
+                        " generer le QR Code pour l'impression",
                         textAlign: TextAlign.start,
                         style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      
                     ],
                   ),
                 ),
@@ -116,32 +106,30 @@ class _NouveauState extends State<Nouveau> {
             ],
           ),
         ),
-        
-          Column(
-            children: [
-              CustomInputField(
-                icon: const Icon(Icons.person),
-                label: "numero",
-                hint: "Entrez votre numéro de demande",
-                validator: (onValidateVal) {
-                  if (onValidateVal!.isEmpty) {
-                    return 'Le numéro  de demande  est requis';
-                  }
-                  return null;
-                },
-                onSaved: (onSavedVal) {
-                  _numero = onSavedVal.toString().trim();
-                },
-                keyboardType: TextInputType.number,
-              ),
-
-               CustomInputField(
+        Column(
+          children: [
+            CustomInputField(
+              icon: const Icon(Icons.person),
+              label: "numero",
+              hint: "Entrez votre numéro de demande",
+              validator: (onValidateVal) {
+                if (onValidateVal!.isEmpty) {
+                  return 'Le numéro de demande est requis';
+                }
+                return null;
+              },
+              onSaved: (onSavedVal) {
+                _numero = onSavedVal.toString().trim();
+              },
+              keyboardType: TextInputType.number,
+            ),
+            CustomInputField(
               icon: const Icon(Icons.person),
               label: "nom",
               hint: "Entrez votre nom de famille (ou le nom de votre époux)",
               validator: (onValidateVal) {
                 if (onValidateVal!.isEmpty) {
-                  return 'Le nom de famille  est requis';
+                  return 'Le nom de famille est requis';
                 }
                 return null;
               },
@@ -150,14 +138,13 @@ class _NouveauState extends State<Nouveau> {
               },
               keyboardType: TextInputType.text,
             ),
-
-             CustomInputField(
+            CustomInputField(
               icon: const Icon(Icons.person),
               label: "date de naissance",
               hint: "Entrez votre date de naissance",
               validator: (onValidateVal) {
                 if (onValidateVal!.isEmpty) {
-                  return 'Le numéro  de demande  est requis';
+                  return 'La date de naissance est requise';
                 }
                 return null;
               },
@@ -166,48 +153,42 @@ class _NouveauState extends State<Nouveau> {
               },
               keyboardType: TextInputType.number,
             ),
-             InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const HomeServiceIdentite(
-                            type: 'home',
-                          )),
-                );
-              },
-                child: const Text(
-                  'Je ne suis pas en possession de mon numéro de demande',
-                  style: TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(
-                height: 4,
-              ),
-            ],
-          ),
-       
+            SizedBox(height: 20),
+
+            _qrCodeUrl.isNotEmpty ? Image.network(_qrCodeUrl) : Container(),
+            // ElevatedButton(
+            //   onPressed: () async {
+            //     if (globalFormKey.currentState!.validate()) {
+            //       globalFormKey.currentState!.save();
+            //       String data = generateDataString();
+            //       String qrCodeUrl = await generateQRCode(data);
+            //       setState(() {
+            //         _qrCodeUrl = qrCodeUrl;
+            //       });
+            //     }
+            //   },
+            //   child: Text('Generate QR Code'),
+            // ),
+           SizedBox(height: 30),
+           Center(
+              child: FormHelper.saveButtonNew("Generate QR Code", () async {
+                if (validatedSave() && globalFormKey.currentState!.validate()) {
+                   globalFormKey.currentState!.save();
+                  String data = generateDataString();
+                  String qrCodeUrl = await generateQRCode(data);
+                  setState(() {
+                    isApiCall = true;
+                     _qrCodeUrl = qrCodeUrl;
+                  });
+                }
+              }, 65),
+            ),
+          ],
+        ),
         const SizedBox(
           height: 4,
         ),
-        Center(
-          child: FormHelper.saveButtonNew("Soumettre la demande", () {
-            if (validatedSave()) {
-              setState(() {
-                isApiCall = true;
-              });
-
-              //Get.to();
-            }
-          }, 65),
-        ),
-        const SizedBox(
-          height: 180,
-        ),
+        
       ],
     );
   }
@@ -222,5 +203,22 @@ class _NouveauState extends State<Nouveau> {
       return false;
     }
     return false;
+  }
+
+  String generateDataString() {
+    return 'Nom: $_nom, Numéro: $_numero, Date de Naissance: $_dateNaissance';
+  }
+}
+
+Future<String> generateQRCode(String data) async {
+  final response = await http.get(
+    Uri.parse(
+        'http://api.qrserver.com/v1/create-qr-code/?data=$data&size=200x200'),
+  );
+
+  if (response.statusCode == 200) {
+    return response.request!.url.toString();
+  } else {
+    throw Exception('Failed to generate QR code');
   }
 }
